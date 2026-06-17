@@ -1,0 +1,147 @@
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: '/api',
+  withCredentials: true,
+  timeout: 12000,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error) => {
+  failedQueue.forEach((p) => (error ? p.reject(error) : p.resolve()));
+  failedQueue = [];
+};
+
+api.interceptors.response.use(
+  (res) => res,
+  async (error) => {
+    const original = error.config;
+    if (
+      error.response?.status === 401 &&
+      error.response?.data?.code === 'TOKEN_EXPIRED' &&
+      !original._retry
+    ) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) =>
+          failedQueue.push({ resolve, reject })
+        )
+          .then(() => api(original))
+          .catch((e) => Promise.reject(e));
+      }
+      original._retry = true;
+      isRefreshing = true;
+      try {
+        await api.post('/auth/refresh');
+        processQueue(null);
+        return api(original);
+      } catch (e) {
+        processQueue(e);
+        window.location.href = '/login';
+        return Promise.reject(e);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+export const authAPI = {
+  sendOTP: (phone) => api.post('/auth/send-otp', { phone }),
+  register: (data) => api.post('/auth/register', data),
+  login: (data) => api.post('/auth/login', data),
+  forgotPasswordSendOTP: (phone) => api.post('/auth/forgot-password/send-otp', { phone }),
+  resetPassword: (data) => api.post('/auth/forgot-password/reset', data),
+  logout: () => api.post('/auth/logout'),
+  getMe: () => api.get('/auth/me'),
+};
+
+export const superAdminAPI = {
+  getStats: () => api.get('/super-admin/stats'),
+  getAdmins: () => api.get('/super-admin/admins'),
+  createAdmin: (data) => api.post('/super-admin/admins/create', data),
+  toggleAdmin: (id) => api.put(`/super-admin/admins/${id}/toggle`),
+  deleteAdmin: (id) => api.delete(`/super-admin/admins/${id}`),
+  getUsers: (params) => api.get('/super-admin/users', { params }),
+  toggleUser: (id) => api.put(`/super-admin/users/${id}/toggle`),
+  getAuditLogs: () => api.get('/super-admin/audit-logs'),
+};
+
+export const adminAPI = {
+  getStats: () => api.get('/admin/stats'),
+  getUsers: (params) => api.get('/admin/users', { params }),
+  toggleUser: (id) => api.put(`/admin/users/${id}/toggle`),
+};
+
+export const notesAPI = {
+  getAll: (params) => api.get('/notes', { params }),
+  create: (data) => api.post('/notes', data),
+  update: (id, data) => api.put(`/notes/${id}`, data),
+  delete: (id) => api.delete(`/notes/${id}`),
+};
+
+export const interviewAPI = {
+  getAll: (params) => api.get('/interview', { params }),
+  create: (data) => api.post('/interview', data),
+  update: (id, data) => api.put(`/interview/${id}`, data),
+  delete: (id) => api.delete(`/interview/${id}`),
+};
+
+export const portfolioAPI = {
+  getPublic: () => api.get('/portfolio/public'),
+  get: () => api.get('/portfolio'),
+  save: (config) => api.put('/portfolio', { config }),
+};
+
+export const resumeAPI = {
+  get: () => api.get('/resume'),
+  save: (data) => api.put('/resume', { data }),
+};
+
+export const learningAPI = {
+  getAll: () => api.get('/learning'),
+  create: (data) => api.post('/learning', data),
+  update: (id, data) => api.put(`/learning/${id}`, data),
+  delete: (id) => api.delete(`/learning/${id}`),
+};
+
+export const todoAPI = {
+  getAll: () => api.get('/todos'),
+  create: (data) => api.post('/todos', data),
+  update: (id, data) => api.put(`/todos/${id}`, data),
+  delete: (id) => api.delete(`/todos/${id}`),
+};
+
+export const bookmarkAPI = {
+  getAll: () => api.get('/bookmarks'),
+  create: (data) => api.post('/bookmarks', data),
+  update: (id, data) => api.put(`/bookmarks/${id}`, data),
+  delete: (id) => api.delete(`/bookmarks/${id}`),
+};
+
+export const projectAPI = {
+  getAll: () => api.get('/projects'),
+  create: (data) => api.post('/projects', data),
+  update: (id, data) => api.put(`/projects/${id}`, data),
+  delete: (id) => api.delete(`/projects/${id}`),
+};
+
+export const contactAPI = {
+  send: (data) => api.post('/contact', data),
+};
+
+export const chatAPI = {
+  status: () => api.get('/chat/status'),
+  // Returns a raw fetch Response with streaming body — not axios
+  stream: (messages) =>
+    fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages }),
+    }),
+};
+
+export default api;

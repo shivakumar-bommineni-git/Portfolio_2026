@@ -1,0 +1,6 @@
+# Ignore node_modules in frontend
+node_modules/
+
+# Optional build/output folders
+dist/
+*.log
