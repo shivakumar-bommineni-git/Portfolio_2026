@@ -2,9 +2,15 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { notesAPI, interviewAPI } from '../services/api';
+import { notesAPI, interviewAPI, portfolioAPI } from '../services/api';
 
 /* ── Icons ── */
+const BellIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+    <path d="M13.73 21a2 2 0 01-3.46 0"></path>
+  </svg>
+);
 const SunIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <circle cx="12" cy="12" r="5"/>
@@ -119,16 +125,15 @@ export function DashSidebar({ active }) {
   return (
     <div className="dash-sidebar">
       {/* Identity — single unified header */}
-      <div className="dash-profile" style={{ padding: '1.25rem', borderBottom: '1px solid var(--border)' }}>
-        <div className="sb-mark" style={{ width: 44, height: 44, borderRadius: 12, fontSize: '.9rem', flexShrink: 0 }}>SB</div>
-        <div className="dash-profile-info">
-          <div className="dash-profile-name" style={{ fontSize: '.9rem', fontWeight: 900 }}>shivakumar_dev</div>
-          <div className="dash-profile-role">
-            <span className="dash-profile-dot" />
-            Full Stack Developer
+      <div className="dash-profile">
+          <div className="sb-mark" style={{ width: 40, height: 40, borderRadius: 10, fontSize: '1rem', flexShrink: 0, background: '#f59e0b', boxShadow: 'none' }}>SB</div>
+          <div className="dash-profile-info">
+            <div className="dash-profile-name" style={{ fontSize: '1rem', fontWeight: 900 }}>Workspace</div>
+            <div className="dash-profile-role" style={{ color: 'var(--text-muted)' }}>
+              Developer Hub
+            </div>
           </div>
         </div>
-      </div>
 
       {/* Nav */}
       <nav className="dash-nav">
@@ -218,15 +223,16 @@ function StatCard({ num, label, sub, gradient, icon, onClick }) {
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [stats, setStats] = useState({ notes: 0, mastered: 0, total_iq: 0 });
+  const [stats, setStats] = useState({ notes: 0, mastered: 0, total_iq: 0, projects: 0 });
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [nr, ir] = await Promise.all([notesAPI.getAll(), interviewAPI.getAll()]);
+        const [nr, ir, pr] = await Promise.all([notesAPI.getAll(), interviewAPI.getAll(), portfolioAPI.get()]);
         const notes = nr.data.notes || [];
         const iq = ir.data.questions || [];
-        setStats({ notes: notes.length, total_iq: iq.length, mastered: iq.filter((q) => q.is_mastered).length });
+        const projects = pr.data.portfolio?.projects || [];
+        setStats({ notes: notes.length, total_iq: iq.length, mastered: iq.filter((q) => q.is_mastered).length, projects: projects.length });
       } catch { /* silently fail */ }
     };
     load();
@@ -263,20 +269,42 @@ export default function Dashboard() {
       <div className="dash-main">
         {/* Top bar */}
         <header className="dash-topbar">
-          <div>
-            <div className="dash-topbar-title">Dashboard</div>
-            <div style={{ fontSize: '.75rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-              {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '.6rem', fontSize: '.9rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+            <span style={{ cursor: 'pointer' }}>Workspace</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+            <span style={{ color: 'var(--text)', fontWeight: 700 }}>Dashboard</span>
           </div>
-          <div className="dash-topbar-right">
+          <div className="dash-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            {/* Notification Bell */}
+            <div style={{ position: 'relative', cursor: 'pointer', color: 'var(--text-sec)' }}>
+              <BellIcon />
+              <div style={{
+                position: 'absolute', top: -4, right: -6, background: '#f59e0b',
+                color: '#fff', fontSize: '9px', fontWeight: 800, padding: '2px 5px',
+                borderRadius: '100px', lineHeight: 1, border: '2px solid var(--surface)'
+              }}>99+</div>
+            </div>
+            {/* Theme Toggle */}
+            <div onClick={toggle} style={{ cursor: 'pointer', color: 'var(--text-sec)' }}>
+              {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+            </div>
+            {/* User Pill */}
             <div style={{
-              display: 'flex', alignItems: 'center', gap: '.5rem',
-              background: 'var(--surface-alt)', border: '1px solid var(--border)',
-              borderRadius: 100, padding: '.35rem .875rem',
+              display: 'flex', alignItems: 'center', gap: '.625rem',
+              background: 'transparent', border: '1px solid var(--border)',
+              borderRadius: 100, padding: '.25rem .875rem .25rem .25rem',
+              cursor: 'pointer', marginLeft: '.5rem',
+              backgroundColor: 'var(--surface)'
             }}>
-              <span style={{ fontSize: '.68rem', color: 'var(--success)', fontWeight: 700 }}>● LIVE</span>
-              <span style={{ fontSize: '.78rem', color: 'var(--text-muted)', fontWeight: 500 }}>Portfolio public</span>
+              <div style={{
+                width: 32, height: 32, borderRadius: '50%', background: '#f59e0b',
+                color: '#fff', fontSize: '.8rem', fontWeight: 800,
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}>
+                {firstName[0]}
+              </div>
+              <span style={{ fontSize: '.85rem', fontWeight: 700 }}>{firstName}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
           </div>
         </header>
