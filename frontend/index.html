@@ -11,7 +11,13 @@
     <title>Shivakumar Bommineni · Full Stack Dev</title>
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect x='2' y='5' width='20' height='14' rx='2' fill='%232563eb'/></svg>" />
-  </head>
+  
+<script>
+  window.addEventListener('error', function(event) {
+    document.body.innerHTML += '<div style="color: red; padding: 20px; z-index: 9999; position: absolute; top: 0; left: 0; background: white;">' + event.message + '</div>';
+  });
+</script>
+</head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
