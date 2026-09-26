@@ -209,23 +209,44 @@ function ActionCard({ icon, gradient, title, desc, to, onClick }) {
 }
 
 /* ── Stat Card ── */
-function StatCard({ num, label, sub, gradient, icon, onClick }) {
+function StatCard({ num, label, sub, color, icon, onClick }) {
   return (
-    <div className="stat-card-v2" onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
-      <div className="stat-card-icon" style={{ background: gradient }}>{icon}</div>
-      <div className="stat-card-num">{num}</div>
-      <div className="stat-card-label">{label}</div>
-      {sub && <div className="stat-card-sub">{sub}</div>}
+    <div className="stat-card-v2" onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default', padding: '1.5rem', background: '#fff', borderRadius: '16px', border: '1px solid var(--border)', position: 'relative', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+      {/* Background Blob */}
+      <div style={{ position: 'absolute', right: '-15%', top: 0, bottom: 0, width: '60%', background: `radial-gradient(ellipse at right center, ${color}30 0%, transparent 70%)` }} />
+      
+      {/* Icon */}
+      <div style={{ position: 'absolute', right: '1.25rem', top: '1.5rem', width: 42, height: 42, borderRadius: '50%', border: `1.5px solid ${color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: color }}>
+        {icon}
+      </div>
+
+      {/* Content */}
+      <div style={{ position: 'relative', zIndex: 1, paddingBottom: '1.25rem' }}>
+        <div style={{ fontSize: '2.5rem', fontWeight: 800, lineHeight: 1, color: 'var(--text)', marginBottom: '1rem' }}>{num}</div>
+        <div style={{ fontSize: '.9rem', fontWeight: 800, color: 'var(--text-sec)' }}>{label}</div>
+        <div style={{ fontSize: '.75rem', color: 'var(--text-muted)', fontWeight: 500, marginTop: '.25rem' }}>{sub}</div>
+      </div>
+
+      {/* Accent Line */}
+      <div style={{ position: 'absolute', left: '1.5rem', bottom: '1.25rem', height: 3, width: 36, background: color, borderRadius: 2 }} />
+
+      {/* Arrow Bottom Right */}
+      {onClick && (
+        <div style={{ position: 'absolute', right: '1.25rem', bottom: '1.25rem', width: 28, height: 28, borderRadius: '50%', background: `${color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: color, transition: 'transform .2s' }} className="stat-arrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg>
+        </div>
+      )}
     </div>
   );
 }
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { theme, toggle } = useTheme();
   const navigate = useNavigate();
   const [stats, setStats] = useState({ notes: 0, mastered: 0, total_iq: 0, projects: 0 });
 
-  useEffect(() => {
+    useEffect(() => {
     const load = async () => {
       try {
         const [nr, ir, pr] = await Promise.all([notesAPI.getAll(), interviewAPI.getAll(), portfolioAPI.get()]);
@@ -268,7 +289,7 @@ export default function Dashboard() {
       <DashSidebar active="home" />
       <div className="dash-main">
         {/* Top bar */}
-        <header className="dash-topbar">
+        <header className="dash-topbar" style={{ padding: '0 2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '.6rem', fontSize: '.9rem', fontWeight: 600, color: 'var(--text-muted)' }}>
             <span style={{ cursor: 'pointer' }}>Workspace</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -333,29 +354,37 @@ export default function Dashboard() {
           </div>
 
           {/* Stats */}
-          <div className="stats-row-v2">
+          <div className="stats-row-v2" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.25rem', marginBottom: '2rem' }}>
             <StatCard
-              num={stats.notes}
-              label="Personal Notes"
-              sub="Saved ideas & snippets"
-              gradient="linear-gradient(135deg, #3b82f6, #2563eb)"
-              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>}
+              num={stats.projects || 0}
+              label="Total Projects"
+              sub="Live in your portfolio"
+              color="#10b981"
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>}
+              onClick={() => navigate('/portfolio-editor')}
+            />
+            <StatCard
+              num={stats.notes || 0}
+              label="Saved Notes"
+              sub="Personal snippets & ideas"
+              color="#3b82f6"
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>}
               onClick={() => navigate('/notes')}
             />
             <StatCard
-              num={stats.total_iq}
+              num={stats.total_iq || 0}
               label="Interview Q&A"
               sub="Questions in your bank"
-              gradient="linear-gradient(135deg, #8b5cf6, #7c3aed)"
-              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>}
+              color="#f59e0b"
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>}
               onClick={() => navigate('/interview')}
             />
             <StatCard
-              num={stats.mastered}
-              label="Mastered"
+              num={stats.mastered || 0}
+              label="Mastered Modules"
               sub={`${masteredPct}% completion rate`}
-              gradient="linear-gradient(135deg, #10b981, #059669)"
-              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>}
+              color="#8b5cf6"
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>}
               onClick={() => navigate('/interview')}
             />
           </div>
