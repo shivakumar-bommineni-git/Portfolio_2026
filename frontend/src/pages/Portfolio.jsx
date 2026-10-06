@@ -142,17 +142,72 @@ export const DEFAULT_CONFIG = {
   ],
   experience: [
     {
-      company: "Freelance / Open Source",
+      company: "CHRP-INDIA",
       role: "Full Stack Developer",
-      startDate: "Jan 2022",
+      startDate: "Apr 2026",
       endDate: "Present",
-      location: "Remote",
+      location: "Hyderabad",
       bullets: [
-        "Built and deployed multiple full-stack applications using React.js, Node.js, and PostgreSQL",
-        "Implemented secure authentication systems with JWT, OTP verification, and role-based access control",
-        "Designed RESTful APIs and real-time features using Socket.io and WebSockets",
+        "Project: Schneider Electric – Learning Management System (LMS)",
+        "Developed and maintained enterprise LMS applications using React.js, Node.js, Express.js, SQL/PostgreSQL, and REST APIs.",
+        "Built responsive and reusable React components for Admin, Trainer, Learner, and Super Admin modules.",
+        "Developed backend APIs for user management, trainer management, courses, assessments, content management, notifications, feedback, dashboards, and reporting.",
+        "Implemented role-based access control and data isolation to ensure users access only the information permitted for their roles.",
+        "Developed dashboard KPIs, analytics, filters, search functionality, modals, tables, status management, and responsive interfaces.",
+        "Integrated frontend applications with backend REST APIs and implemented proper API validation and error handling.",
+        "Worked on Trainer, Content Hub, User Management, Assessment, Question Bank, Notification, Events, Feedback, and Dashboard modules.",
+        "Implemented API integrations for learner progress, course completion tracking, trainer assignments, reminders, and dashboard metrics.",
+        "Used Git/GitHub for version control and collaborated with development and testing teams following Agile/Scrum practices.",
+        "Project: Internal HRIS Application",
+        "Developed frontend and backend features for an internal Human Resource Information System (HRIS) using React.js, Node.js, Express.js, SQL/PostgreSQL, and REST APIs.",
+        "Implemented Employee Management, Dashboard, Appraisal, Interview Scheduling, Leave Management, and employee profile modules.",
+        "Developed reusable employee tables, modals, action menus, status badges, avatars, tooltips, search, filtering, and pagination.",
+        "Integrated APIs for employee data, appraisal workflows, interview scheduling, leave management, dashboard metrics, and profile information.",
+        "Worked on responsive UI enhancements and optimized API-driven data loading for improved application usability.",
+        "Implemented dynamic search and filtering functionality across HRIS modules.",
+        "Project: Internal Applicant Tracking System (ATS)",
+        "Developed and delivered features for an internal ATS/Recruitment application using React.js, Node.js, Express.js, SQL/PostgreSQL, and REST APIs.",
+        "Implemented modules covering Candidate Management, Walk-In validation, Interview Scheduling, Masters, Profiles, Reports, Dashboard, and Interview Slots.",
+        "Developed candidate tables, forms, filters, validation, dashboards, and recruitment workflow interfaces.",
+        "Implemented inline DOCX/PDF resume preview and integrated candidate-related APIs.",
+        "Worked on recruitment review workflows, including role-based visibility for HR Manager, HR Head, Admin, HRBP, HR Executive, and Recruiter users.",
+        "Fixed API integration issues, UI bugs, validation issues, navigation problems, and dynamic filtering across recruitment modules."
       ],
     },
+    {
+      company: "Pereco",
+      role: "Full-stack Developer",
+      startDate: "Mar 2025",
+      endDate: "Present",
+      location: "Hyderabad, Telangana, India · On-site",
+      bullets: [
+        "Worked on full-stack development projects using MERN Stack technologies.",
+        "Designed and developed dynamic web pages using React.js and integrated RESTful APIs.",
+        "Handled backend logic and data flow to ensure smooth application performance."
+      ],
+    },
+    {
+      company: "SRNR IT SOLUTIONS PVT LTD",
+      role: "MERN Full Stack Intern",
+      startDate: "Dec 2024",
+      endDate: "Mar 2025",
+      location: "Hyderabad, Telangana, India · On-site",
+      bullets: [
+        "Worked as a MERN Full Stack Intern, gaining hands-on experience in developing and maintaining web applications.",
+        "Developed responsive user interfaces using React.js, JavaScript, HTML, CSS."
+      ],
+    },
+    {
+      company: "Quality Thought Infosystems",
+      role: "MERN Full Stack Web Development Trainee",
+      startDate: "Nov 2023",
+      endDate: "Apr 2024",
+      location: "Hyderabad, Telangana, India · On-site",
+      bullets: [
+        "Completed intensive MERN Full Stack Web Development training with hands-on experience in building web applications.",
+        "Gained hands-on experience in building dynamic web applications using MongoDB, Express.js, React.js, and Node.js."
+      ],
+    }
   ],
   projects: [
     {
